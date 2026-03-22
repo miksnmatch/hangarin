@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import socket
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -7,7 +8,7 @@ SECRET_KEY = 'django-insecure-cx*up(1=qd0b0)3v53i5!oc4ztp1_l6bgkq2v2q1f^0e(j#2*g
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['miksnmatch.pythonanywhere.com', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,6 +26,11 @@ INSTALLED_APPS = [
     'taskmanager',
     'widget_tweaks',
 ]
+
+if 'pythonanywhere' in socket.gethostname():
+    SITE_ID = 2
+else:
+    SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
