@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block title %}Hangarin | Task Manager{% endblock %}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/argon-dashboard.min.css' %}">
+  <style>
+    .nav-link-text { font-size: 0.875rem; }
+    .sidenav .nav-item .nav-link { padding: 0.675rem 1rem; }
+    .badge-status {
+      font-size: 0.75rem;
+      padding: 0.35em 0.65em;
+      border-radius: 0.375rem;
+      font-weight: 600;
+    }
+    .badge-pending { background-color: #ffd60a22; color: #b8860b; }
+    .badge-inprogress { background-color: #0ea5e922; color: #0369a1; }
+    .badge-completed { background-color: #22c55e22; color: #15803d; }
+    .badge-critical { background-color: #ef444422; color: #b91c1c; }
+    .badge-high { background-color: #f9731622; color: #c2410c; }
+    .badge-medium { background-color: #06b6d422; color: #0e7490; }
+    .badge-low { background-color: #94a3b822; color: #475569; }
+    .badge-optional { background-color: #a855f722; color: #7e22ce; }
+    .sidebar-section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8392ab;
+      padding: 0.5rem 1rem 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .nav-link.active { background: linear-gradient(310deg,#5e72e4,#825ee4) !important; border-radius: 0.5rem; }
+    .nav-link.active .nav-link-text, .nav-link.active i { color: #fff !important; }
+    .table th { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #8392ab; border-top: none; }
+    .table td { font-size: 0.875rem; vertical-align: middle; }
+    .btn-action { font-size: 0.75rem; padding: 0.3rem 0.8rem; border-radius: 0.5rem; font-weight: 600; }
+    .stat-card { border-radius: 0.75rem; border: 1px solid #e9ecef; }
+    .stat-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-size: 1.25rem; }
+    .nav-link.active div {
+        background: rgba(255,255,255,0.2) !important;
+    }
+    .nav-link.active i {
+        color: #fff !important;
+    }
+    #sidenav-main {
+    overflow-y: visible !important;
+    height: auto !important;
+    }
+    #sidenav-collapse-main {
+    overflow: visible !important;
+    }
+  </style>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-white shadow" id="sidenav-main">
+  <div class="sidenav-header d-flex align-items-center px-3 py-4">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+      <div class="d-flex align-items-center justify-content-center me-2" style="width:36px;height:36px;background:linear-gradient(310deg,#5e72e4,#825ee4);border-radius:0.5rem;">
+        <i class="fas fa-check-double text-white" style="font-size:1rem;"></i>
+      </div>
+      <span class="font-weight-bold text-dark" style="font-size:1rem;">Hangarin</span>
+    </a>
+  </div>
+  <hr class="horizontal dark mt-0">
+
+  <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+    <ul class="navbar-nav ps-2 pe-2">
+
+      <li class="sidebar-section-label">Main</li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center {% block nav_tasks %}{% endblock %}" href="{% url 'task-list' %}">
+          <div class="d-flex align-items-center justify-content-center me-2 shadow"
+               style="width:32px;height:32px;min-width:32px;background:#f8f9fa;border-radius:0.5rem;">
+            <i class="fas fa-list-check text-primary" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text">My Tasks</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center {% block nav_subtasks %}{% endblock %}" href="{% url 'subtask-list' %}">
+          <div class="d-flex align-items-center justify-content-center me-2 border-radius-md shadow"
+               style="width:32px;height:32px;min-width:32px;background:#f8f9fa;border-radius:0.5rem;">
+            <i class="fas fa-list-ul text-primary" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text">Sub Tasks</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center {% block nav_notes %}{% endblock %}" href="{% url 'note-list' %}">
+          <div class="d-flex align-items-center justify-content-center me-2 border-radius-md shadow"
+               style="width:32px;height:32px;min-width:32px;background:#f8f9fa;border-radius:0.5rem;">
+            <i class="fas fa-note-sticky text-primary" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text">Notes</span>
+        </a>
+      </li>
+
+      <li class="sidebar-section-label">Settings</li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center {% block nav_categories %}{% endblock %}" href="{% url 'category-list' %}">
+          <div class="d-flex align-items-center justify-content-center me-2 border-radius-md shadow"
+               style="width:32px;height:32px;min-width:32px;background:#f8f9fa;border-radius:0.5rem;">
+            <i class="fas fa-folder text-primary" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text">Categories</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center {% block nav_priorities %}{% endblock %}" href="{% url 'priority-list' %}">
+          <div class="d-flex align-items-center justify-content-center me-2 border-radius-md shadow"
+               style="width:32px;height:32px;min-width:32px;background:#f8f9fa;border-radius:0.5rem;">
+            <i class="fas fa-flag text-primary" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text">Priorities</span>
+        </a>
+      </li>
+
+      <li class="sidebar-section-label">Quick Actions</li>
+
+      <li class="nav-item mb-3">
+        <a class="nav-link d-flex align-items-center" href="{% url 'task-add' %}">
+          <div class="d-flex align-items-center justify-content-center me-2"
+               style="width:32px;height:32px;min-width:32px;background:linear-gradient(310deg,#5e72e4,#825ee4);border-radius:0.5rem;">
+            <i class="fas fa-plus text-white" style="font-size:0.85rem;"></i>
+          </div>
+          <span class="nav-link-text fw-semibold">Add New Task</span>
+        </a>
+      </li>
+
+    </ul>
+  </div>
+</aside>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
+    <div class="container-fluid py-1 px-3 d-flex justify-content-between align-items-center">
+      <div></div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'task-add' %}" class="btn btn-primary btn-sm d-flex align-items-center gap-2" style="border-radius:0.5rem;">
+          <i class="fas fa-plus"></i> Add New Task
+        </a>
+        <i class="fas fa-bell text-secondary fs-6"></i>
+        <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold"
+             style="width:36px;height:36px;background:linear-gradient(310deg,#5e72e4,#825ee4);font-size:0.85rem;">
+          {{ request.user.username|first|upper }}
+        </div>
+        <div class="dropdown">
+          <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+            <span class="fw-semibold" style="font-size:0.875rem;">{{ request.user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li><a class="dropdown-item" href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid py-4 px-4">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<script src="{% static 'js/core/popper.min.js' %}"></script>
+<script src="{% static 'js/core/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/argon-dashboard.min.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Tasks | Task Manager{% endblock %}
+{% block nav_tasks %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-bold d-flex align-items-center gap-2">
+    <i class="fas fa-list-check text-primary"></i> My Tasks
+  </h4>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card h-100 border-start border-primary border-3">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <p class="text-uppercase text-muted fw-bold mb-1" style="font-size:0.7rem;letter-spacing:0.08em;">Tasks</p>
+          <h3 class="fw-bold mb-0">{{ total_tasks }}</h3>
+        </div>
+        <div class="stat-icon" style="background:#eef2ff;">
+          <i class="fas fa-list-check text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card h-100 border-start border-success border-3">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <p class="text-uppercase text-muted fw-bold mb-1" style="font-size:0.7rem;letter-spacing:0.08em;">Tasks Today</p>
+          <h3 class="fw-bold mb-0">{{ tasks_today }}</h3>
+        </div>
+        <div class="stat-icon" style="background:#f0fdf4;">
+          <i class="fas fa-calendar-day text-success"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card h-100 border-start border-warning border-3">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <p class="text-uppercase text-muted fw-bold mb-1" style="font-size:0.7rem;letter-spacing:0.08em;">Tasks This Week</p>
+          <h3 class="fw-bold mb-0">{{ tasks_this_week }}</h3>
+        </div>
+        <div class="stat-icon" style="background:#fffbeb;">
+          <i class="fas fa-calendar-week text-warning"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card h-100 border-start border-info border-3">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <p class="text-uppercase text-muted fw-bold mb-1" style="font-size:0.7rem;letter-spacing:0.08em;">Completed Tasks</p>
+          <h3 class="fw-bold mb-0">{{ completed_tasks }}</h3>
+        </div>
+        <div class="stat-icon" style="background:#f0f9ff;">
+          <i class="fas fa-circle-check text-info"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+      <h6 class="mb-0 fw-bold">Task List</h6>
+      <form method="get" action="{% url 'task-list' %}" class="d-flex align-items-center gap-2">
+        <select name="sort_by" class="form-select form-select-sm" style="min-width:140px;border-radius:0.5rem;">
+          <option value="">Sort By</option>
+          <option value="deadline" {% if request.GET.sort_by == "deadline" %}selected{% endif %}>Deadline</option>
+          <option value="status" {% if request.GET.sort_by == "status" %}selected{% endif %}>Status</option>
+          <option value="priority" {% if request.GET.sort_by == "priority" %}selected{% endif %}>Priority</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm" style="border-radius:0.5rem;">
+          <i class="fas fa-filter"></i>
+        </button>
+      </form>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4">Title</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in object_list %}
+          <tr>
+            <td class="ps-4 fw-semibold">{{ task.title }}</td>
+            <td class="text-muted" style="font-size:0.85rem;">{{ task.deadline|date:"M. j, Y, g:i a." }}</td>
+            <td>
+              {% if task.status == "Pending" %}
+                <span class="badge-status badge-pending">Pending</span>
+              {% elif task.status == "In Progress" %}
+                <span class="badge-status badge-inprogress">In Progress</span>
+              {% else %}
+                <span class="badge-status badge-completed">Completed</span>
+              {% endif %}
+            </td>
+            <td class="text-muted" style="font-size:0.85rem;">{{ task.category }}</td>
+            <td>
+              {% if task.priority.name == "Critical" %}
+                <span class="badge-status badge-critical">Critical</span>
+              {% elif task.priority.name == "High" %}
+                <span class="badge-status badge-high">↑ High</span>
+              {% elif task.priority.name == "Medium" %}
+                <span class="badge-status badge-medium">— Medium</span>
+              {% elif task.priority.name == "Low" %}
+                <span class="badge-status badge-low">↓ Low</span>
+              {% else %}
+                <span class="badge-status badge-optional">◎ {{ task.priority.name }}</span>
+              {% endif %}
+            </td>
+            <td class="text-end pe-4">
+              <a href="{% url 'task-detail' task.pk %}" class="btn btn-primary btn-action me-1">View</a>
+              <a href="{% url 'task-delete' task.pk %}" class="btn btn-outline-danger btn-action">Delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="fas fa-inbox text-muted" style="font-size:2rem;"></i>
+              <p class="text-muted mt-2 mb-0">No tasks found.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+      <small class="text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} tasks</small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">Prev</span></li>
+          {% endif %}
+          {% for num in paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
