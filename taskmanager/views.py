@@ -5,9 +5,12 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 from taskmanager.models import Task, SubTask, Note, Category, Priority
 from taskmanager.forms import TaskForm, SubTaskForm, NoteForm, CategoryForm, PriorityForm
+
+from django.db.models import Q
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -17,8 +20,24 @@ class TaskListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        query = self.request.GET.get('q')
         sort_by = self.request.GET.get('sort_by')
+        status = self.request.GET.get('status')
+        priority = self.request.GET.get('priority')
+        category = self.request.GET.get('category')
         allowed = ['deadline', 'status', 'priority']
+
+        if query:
+            qs = qs.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query)
+            )
+        if status:
+            qs = qs.filter(status=status)
+        if priority:
+            qs = qs.filter(priority__id=priority)
+        if category:
+            qs = qs.filter(category__id=category)
         if sort_by in allowed:
             return qs.order_by(sort_by)
         return qs.order_by('-created_at')
@@ -32,6 +51,8 @@ class TaskListView(LoginRequiredMixin, ListView):
         context['tasks_today'] = Task.objects.filter(deadline__date=today).count()
         context['tasks_this_week'] = Task.objects.filter(deadline__date__range=[week_start, week_end]).count()
         context['completed_tasks'] = Task.objects.filter(status='Completed').count()
+        context['categories'] = Category.objects.all()
+        context['priorities'] = Priority.objects.all()
         return context
 
 
