@@ -8,6 +8,31 @@
   <h4 class="mb-0 fw-bold d-flex align-items-center gap-2">
     <i class="fas fa-list-check text-primary"></i> My Tasks
   </h4>
+  <form method="get" action="{% url 'task-list' %}" class="d-flex align-items-center gap-2">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search..." class="form-control form-control-sm" style="width:160px;border-radius:0.5rem;">
+    <select name="status" class="form-select form-select-sm" style="width:100px;border-radius:0.5rem;">
+      <option value="">Status</option>
+      <option value="Pending" {% if request.GET.status == "Pending" %}selected{% endif %}>Pending</option>
+      <option value="In Progress" {% if request.GET.status == "In Progress" %}selected{% endif %}>In Progress</option>
+      <option value="Completed" {% if request.GET.status == "Completed" %}selected{% endif %}>Completed</option>
+    </select>
+    <select name="priority" class="form-select form-select-sm" style="width:100px;border-radius:0.5rem;">
+      <option value="">Priority</option>
+      {% for pri in priorities %}
+      <option value="{{ pri.pk }}" {% if request.GET.priority == pri.pk|stringformat:"s" %}selected{% endif %}>{{ pri.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="category" class="form-select form-select-sm" style="width:100px;border-radius:0.5rem;">
+      <option value="">Category</option>
+      {% for cat in categories %}
+      <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm" style="border-radius:0.5rem;">
+      <i class="fas fa-filter"></i>
+    </button>
+    <a href="{% url 'task-list' %}" class="btn btn-outline-secondary btn-sm" style="border-radius:0.5rem;">Clear</a>
+  </form>
 </div>
 
 <div class="row g-3 mb-4">
@@ -67,19 +92,8 @@
 
 <div class="card shadow-sm">
   <div class="card-body p-0">
-    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+    <div class="px-4 py-3 border-bottom">
       <h6 class="mb-0 fw-bold">Task List</h6>
-      <form method="get" action="{% url 'task-list' %}" class="d-flex align-items-center gap-2">
-        <select name="sort_by" class="form-select form-select-sm" style="min-width:140px;border-radius:0.5rem;">
-          <option value="">Sort By</option>
-          <option value="deadline" {% if request.GET.sort_by == "deadline" %}selected{% endif %}>Deadline</option>
-          <option value="status" {% if request.GET.sort_by == "status" %}selected{% endif %}>Status</option>
-          <option value="priority" {% if request.GET.sort_by == "priority" %}selected{% endif %}>Priority</option>
-        </select>
-        <button type="submit" class="btn btn-primary btn-sm" style="border-radius:0.5rem;">
-          <i class="fas fa-filter"></i>
-        </button>
-      </form>
     </div>
 
     <div class="table-responsive">
