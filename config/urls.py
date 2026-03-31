@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from taskmanager import views
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,5 @@ urlpatterns = [
     path('priorities/add/', views.PriorityCreateView.as_view(), name='priority-add'),
     path('priorities/<int:pk>/edit/', views.PriorityUpdateView.as_view(), name='priority-edit'),
     path('priorities/<int:pk>/delete/', views.PriorityDeleteView.as_view(), name='priority-delete'),
+    path('', include('pwa.urls')),
 ]
